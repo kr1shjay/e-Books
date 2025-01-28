@@ -4,7 +4,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export function decodeToken(token) {
-    return jwt.verify(token, process.env.TOKEN_SECRET_KEY);
+    const verify = jwt.verify(token, process.env.TOKEN_SECRET_KEY);
+    console.log("verify L ",verify)
+    return verify;
 }
 
 

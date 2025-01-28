@@ -1,3 +1,4 @@
+import book from "../models/book.js";
 import review from "../models/review.js";
 
 export async function addReview(req, res) {
@@ -29,7 +30,9 @@ export async function addReview(req, res) {
 export async function getReview(req, res) {
     try {
         const { id } = req.params;
-        const bookReview = await review.findAll({ attributes: ["review_text"], where: { BookId: id } })
+        const foundBooks = await book.findAll({ where: { ISBN: id } });
+
+        const bookReview = await review.findAll({ attributes: ["review_text"], where: { BookId: foundBooks[0].id } })
 
         if (!bookReview.length) {
             return res.json({ message: "No review found for this book!" });
@@ -50,7 +53,10 @@ export async function deleteReview(req, res) {
         const { user_id } = req.user;
         const { id } = req.params;
 
-        const deletedReview = await review.destroy({ where: { UserId: user_id, BookId: id } });
+        const foundBooks = await book.findAll({ where: { ISBN: id } });
+        const bookID = foundBooks[0].id
+
+        const deletedReview = await review.destroy({ where: { UserId: user_id, BookId: bookID } });
         // console.log(deletedReview);
 
         if (!deletedReview) {
